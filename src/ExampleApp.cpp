@@ -141,11 +141,13 @@ void ExampleApp::onRenderGraphicsContext(const VRGraphicsState &renderState) {
     //Make the ball rotate so that it looks like it is rolling on the table.
     
     
-    
-    mat4 rotation = glm::rotate(sphereFrame, 0.0f, glm::normalize(dir));
-    mat4 translation = glm::translate(sphereFrame, 5.0f*dir);
-    mat4 inverseTranslation = glm::inverse(translation);
-    sphereFrame = translation;
+    float angle = glm::length(dir);
+    vec3 axis = glm::cross(vec3(0.0, 1.0, 0.0), glm::normalize(dir));  // Our rotation axis in the x-z plane
+    if (glm::length(dir) == 0) { axis = vec3(1.0); }  // Set to an arbitrary axis, because the angle will be zero (no rotation)
+    sphereFrame = glm::rotate(sphereFrame, angle, axis);
+    //sphereFrame = glm::translate(sphereFrame, 5.0f*dir);
+//    mat4 inverseTranslation = glm::inverse(translation);
+//    sphereFrame = translation*sphereFrame;
     
     
     
