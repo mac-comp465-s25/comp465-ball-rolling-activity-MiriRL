@@ -142,6 +142,12 @@ void ExampleApp::onRenderGraphicsContext(const VRGraphicsState &renderState) {
     
     
     
+    mat4 rotation = glm::rotate(sphereFrame, 0.0f, glm::normalize(dir));
+    mat4 translation = glm::translate(sphereFrame, 5.0f*dir);
+    mat4 inverseTranslation = glm::inverse(translation);
+    sphereFrame = translation;
+    
+    
     
     
 }
