@@ -134,16 +134,30 @@ void ExampleApp::onRenderGraphicsContext(const VRGraphicsState &renderState) {
         
         sphere.reset(new Sphere(vec3(0.0), 1, vec4(1,0,0,1)));
         ground.reset(new GroundPlane(vec3(0, -1, 0), vec3(0, 1, 0)));
-
     }
     
     //TODO: Update the sphereFrame matrix to move the ball's position based on the dir variable.
     //Make the ball rotate so that it looks like it is rolling on the table.
+    vec3 lastTranslation = vec3(column(sphereFrame, 3));
+    //std::cout << "Last translation: dx=" << lastTranslation.x << ", dy=" << lastTranslation.y << ", dz=" << lastTranslation.z << std::endl;
+    mat4 inverseTranslation = glm::translate(mat4(1.0), -1.0f*lastTranslation);
     
+    float angle = glm::length(dir);
+    vec3 axis = glm::cross(vec3(0.0, 1.0, 0.0), glm::normalize(dir));  // Our rotation axis in the x-z plane
+    if (glm::length(dir) == 0) { axis = vec3(1.0); }  // Set to an arbitrary axis, because the angle will be zero (no rotation)
     
+    if (sphereFrame == mat4(1.0)) {
+        std::cout << "Is identity Matrix" << std::endl;
+    } else {
+        std::cout << "Is NOT identity Matrix" << std::endl;
+    }
     
+    mat4 rotation = glm::rotate(mat4(1.0), angle, axis);
     
+    mat4 translation = glm::translate(mat4(1.0), lastTranslation);
+    mat4 dirTranslation = glm::translate(mat4(1.0), dir);
     
+    sphereFrame = dirTranslation*translation*rotation*inverseTranslation*sphereFrame;
 }
 
 void ExampleApp::onRenderGraphicsScene(const VRGraphicsState &renderState) {
