@@ -140,7 +140,7 @@ void ExampleApp::onRenderGraphicsContext(const VRGraphicsState &renderState) {
     //Make the ball rotate so that it looks like it is rolling on the table.
     vec3 lastTranslation = vec3(column(sphereFrame, 3));
     //std::cout << "Last translation: dx=" << lastTranslation.x << ", dy=" << lastTranslation.y << ", dz=" << lastTranslation.z << std::endl;
-    sphereFrame = glm::translate(sphereFrame, lastTranslation*vec3(-1.0));
+    mat4 inverseTranslation = glm::translate(mat4(1.0), -1.0f*lastTranslation);
     
     float angle = glm::length(dir);
     vec3 axis = glm::cross(vec3(0.0, 1.0, 0.0), glm::normalize(dir));  // Our rotation axis in the x-z plane
@@ -152,10 +152,12 @@ void ExampleApp::onRenderGraphicsContext(const VRGraphicsState &renderState) {
         std::cout << "Is NOT identity Matrix" << std::endl;
     }
     
-    sphereFrame = glm::rotate(sphereFrame, angle, axis);
+    mat4 rotation = glm::rotate(mat4(1.0), angle, axis);
     
-    sphereFrame = glm::translate(sphereFrame, lastTranslation);
-    sphereFrame = glm::translate(sphereFrame, 5.0f*dir);
+    mat4 translation = glm::translate(mat4(1.0), lastTranslation);
+    mat4 dirTranslation = glm::translate(mat4(1.0), dir);
+    
+    sphereFrame = dirTranslation*translation*rotation*inverseTranslation*sphereFrame;
 }
 
 void ExampleApp::onRenderGraphicsScene(const VRGraphicsState &renderState) {
